@@ -1,10 +1,10 @@
 using DelatorreStore.Domain.StoreContext.Enums;
-using FluentValidator;
+using DelatorreStore.Shared.Entities;
 using System;
 
 namespace DelatorreStore.Domain.StoreContext.Entities
 {
-    public class Delivery : Notifiable
+    public class Delivery : Entity
     {
         public Delivery(DateTime estimatedDeliveryDate)
         {

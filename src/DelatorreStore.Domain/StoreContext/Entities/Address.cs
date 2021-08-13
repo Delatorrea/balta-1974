@@ -1,9 +1,9 @@
 ﻿using DelatorreStore.Domain.StoreContext.Enums;
-using FluentValidator;
+using DelatorreStore.Shared.Entities;
 
 namespace DelatorreStore.Domain.StoreContext.Entities
 {
-    public class Address : Notifiable
+    public class Address : Entity
     {
         public Address(string street,
             string number,

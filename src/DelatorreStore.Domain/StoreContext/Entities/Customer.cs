@@ -1,11 +1,11 @@
 using DelatorreStore.Domain.StoreContext.ValueObjects;
-using FluentValidator;
+using DelatorreStore.Shared.Entities;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace DelatorreStore.Domain.StoreContext.Entities
 {
-    public class Customer : Notifiable
+    public class Customer : Entity
     {
         private readonly IList<Address> _addresses;
 
