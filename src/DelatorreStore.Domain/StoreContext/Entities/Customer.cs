@@ -26,7 +26,7 @@ namespace DelatorreStore.Domain.StoreContext.Entities
         public Document Document { get; private set; }
         public Email Email { get; private set; }
         public string Phone { get; private set; }
-        public IReadOnlyCollection<Address> Adresses => _addresses.ToArray();
+        public IReadOnlyCollection<Address> Addresses => _addresses.ToArray();
 
         public void AddAddress(Address address)
         {

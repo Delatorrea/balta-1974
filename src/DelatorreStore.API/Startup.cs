@@ -1,40 +1,69 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using DelatorreStore.Domain.StoreContext.Handlers;
+using DelatorreStore.Domain.StoreContext.Repositories;
+using DelatorreStore.Domain.StoreContext.Services;
+using DelatorreStore.Infra.StoreContext.DataContexts;
+using DelatorreStore.Infra.StoreContext.Repositories;
+using DelatorreStore.Infra.StoreContext.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Configuration;
+using System.IO;
+using DelatorreStore.Shared;
 
 namespace DelatorreStore.API
 {
     public class Startup
     {
-        // This method gets called by the runtime. Use this method to add services to the container.
-        // For more information on how to configure your application, visit https://go.microsoft.com/fwlink/?LinkID=398940
+        public static IConfiguration Configuration { get; set;}
         public void ConfigureServices(IServiceCollection services)
         {
+            var builder = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                .AddJsonFile("appsettings.json");
+
+            Configuration = builder.Build();
+
+            services.AddApplicationInsightsTelemetry(Configuration);
+
+            services.AddMvc(mvc => mvc.EnableEndpointRouting = false);
+
+            services.AddResponseCompression();
+
+            services.AddScoped<DelatorreDataContext, DelatorreDataContext>();
+            services.AddTransient<ICustomerRepository, CustomerRepository>();
+            services.AddTransient<IEmailService, EmailService>();
+            services.AddTransient<CustomerHandler, CustomerHandler>();
+
+            services.AddSwaggerGen();
+
+            services.AddElmahIo(o =>
+            {
+                o.ApiKey = "5ca58aaecaaa43138b6ab566fe2b90c4";
+                o.LogId = new Guid("fd379b3f-b8c2-47d3-8238-b6b8f71a9132");
+            });
+
+            Settings.ConnectionString = $"{Configuration["connectionString"]}";
         }
 
-        // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
         {
             if (env.IsDevelopment())
-            {
                 app.UseDeveloperExceptionPage();
-            }
 
-            app.UseRouting();
+            app.UseElmahIo();
 
-            app.UseEndpoints(endpoints =>
+            app.UseMvc();
+            app.UseResponseCompression();
+
+            app.UseSwagger();
+            app.UseSwaggerUI(c =>
             {
-                endpoints.MapGet("/", async context =>
-                {
-                    await context.Response.WriteAsync("Hello World!");
-                });
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Delatorre Store - V1");
             });
+
         }
     }
 }
